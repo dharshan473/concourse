@@ -1,0 +1,24 @@
+resources:
+- name: concourse
+  type: git
+  source:
+    uri: https://github.com/dharshan473/concourse.git
+    branch: main
+
+jobs:
+- name: hello-world-job
+  plan:
+  - get: concourse
+  - task: run-hello-world
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source: { repository: ubuntu, tag: latest }
+      inputs:
+      - name: concourse
+      run:
+        path: /bin/bash
+        args:
+        - -c
+        - concourse/hello_world.sh
