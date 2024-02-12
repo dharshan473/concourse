@@ -1,24 +1,30 @@
 resources:
-- name: concourse
+- name: my-git-repo
   type: git
   source:
-    uri: https://github.com/dharshan473/concourse.git
-    branch: main
+    uri: https://github.com/dharshan473/concourse
+    branch: master
 
 jobs:
-- name: hello-world-job
+- name: run-helloworld
   plan:
-  - get: concourse
-  - task: run-hello-world
+  - get: my-git-repo
+    trigger: true
+  - task: execute-helloworld
     config:
       platform: linux
       image_resource:
         type: registry-image
-        source: { repository: ubuntu, tag: latest }
+        source:
+          repository: alpine
+          tag: 'latest'
       inputs:
-      - name: concourse
+      - name: my-git-repo
       run:
-        path: /bin/bash
+        path: /bin/sh
         args:
-        - -c
-        - concourse/hello_world.sh
+        - -exc
+        - |
+          cd my-git-repo
+          chmod +x helloworld.sh
+          ./helloworld.sh
